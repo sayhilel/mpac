@@ -1,6 +1,6 @@
-# manpac: Manage Your Cloned Repositories
+# **WIP**
 
-**WIP**
+# manpac: Manage Your Cloned Repositories
 
 ## Overview
 
