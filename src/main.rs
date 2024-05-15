@@ -8,14 +8,18 @@ mod repo;
 // Use
 use clap::Parser;
 use cli::Args;
-use repo::Repo;
+use git2::Repository;
 
-fn main() {
+use crate::repo::load_repos;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = cli::Args::parse();
     println!("Command::{}, Flag::{}", args.command, args.flag);
 
     //Test Object
-    let path = "test".to_string();
-    let time = 5;
-    let test_repo = Repo { path, time };
+    let repos = load_repos();
+
+    println!("{}", repos.unwrap()[0].path);
+
+    Ok(())
 }
