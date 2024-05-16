@@ -1,4 +1,4 @@
-use crate::repo::Repo;
+use git2::Repository;
 
 use std::path::Path;
 use std::{
@@ -8,11 +8,11 @@ use std::{
 
 // Might help later
 pub struct Repos {
-    repos: Vec<Repo>,
+    repos: Vec<Repository>,
 }
 
 // Implement functions for repos here
-pub fn new() -> Result<Repos, Error> {
+pub fn new() -> Result<Repos, Box<dyn std::error::Error>> {
     // Open the file
     let path = Path::new("/home/croxymoc/Documents/Projects/manpac/target/debug/repos.txt"); // Very system dependant // Remember to change
     let repo_file = OpenOptions::new()
@@ -24,9 +24,9 @@ pub fn new() -> Result<Repos, Error> {
     // Load ; REPLACE WITH JSON LATER
     let mut reader = BufReader::new(repo_file);
     let mut repos_new = Repos { repos: vec![] };
-    // Very ugly and impractical but we ball for now
+    // IDK how to do this with map
     for repo_path in reader.lines() {
-        repos_new.repos.push(Repo { path: repo_path? });
+        repos_new.repos.push(Repository::open(repo_path?)?);
     }
 
     Ok(repos_new)
@@ -39,10 +39,15 @@ impl Repos {
             0 => print!("NO REPOS --CHANGE-ME\n"),
             _ => {
                 for repo in self.repos.iter() {
-                    print!("{}\n", repo.path);
+                    // No error check for this unwrap :(
+                    print!("{}\n", repo.path().to_str().unwrap());
                 }
             }
         }
     }
+
+    // Just gonna update all repos for now
+    pub fn update_repos(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        Ok(())
+    }
 }
-//pub fn update_repos(repo) -> Result<(), Error> {}

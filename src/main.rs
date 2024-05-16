@@ -3,13 +3,12 @@
 
 // Modules
 mod cli;
-mod repo;
+mod git;
 mod repos;
 
 // Use
 use clap::Parser;
 use cli::Args;
-use git2::Repository;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = cli::Args::parse();
