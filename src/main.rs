@@ -10,16 +10,16 @@ use clap::Parser;
 use cli::Args;
 use git2::Repository;
 
-use crate::repo::load_repos;
+use crate::repo::Repos;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = cli::Args::parse();
     println!("Command::{}, Flag::{}", args.command, args.flag);
 
     //Test Object
-    let repos = load_repos();
+    let repos = repo::new().unwrap();
 
-    println!("{}", repos.unwrap()[0].path);
+    repos.list_repos();
 
     Ok(())
 }
