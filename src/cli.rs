@@ -1,7 +1,11 @@
 use clap::Parser;
 
-#[derive(Parser)]
 pub struct Args {
-    pub command: String,
+    pub command: Option<Commands>,
     pub flag: usize,
+}
+
+pub enum Commands {
+    Update,
+    List,
 }

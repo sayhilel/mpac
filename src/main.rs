@@ -3,21 +3,14 @@
 
 // Modules
 mod cli;
-mod git;
-mod repos;
+mod repolist;
 
-// Use
-use clap::Parser;
-use cli::Args;
+use std::{error::Error, path::Path};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = cli::Args::parse();
-    println!("Command::{}, Flag::{}", args.command, args.flag);
-
-    //Test Object
-    let repos = repos::new().unwrap();
-
-    repos.list_repos();
+fn main() -> Result<(), Box<dyn Error>> {
+    let config_path = Path::new("/home/croxymoc/Documents/Projects/manpac/target/debug/repos.txt");
+    let mut repo_list = repolist::RepoList::new(&config_path)?;
+    repo_list.list_repos();
 
     Ok(())
 }
