@@ -1,28 +1,14 @@
+use crate::repo::Repo;
+
+use std::error::Error;
 use std::{
-    error::Error,
     fs::OpenOptions,
     io::{BufRead, BufReader},
     path::Path,
 };
 
-// TO-DO: Add input validation
-pub struct RepoPath {
-    pub path: String,
-}
-
-impl RepoPath {
-    pub fn new(path: &mut String) -> (bool, RepoPath) {
-        (
-            !path.trim().is_empty(),
-            RepoPath {
-                path: path.trim().to_string(),
-            },
-        )
-    }
-}
-
 pub struct RepoList {
-    pub repos: Vec<RepoPath>,
+    pub repos: Vec<Repo>,
 }
 
 impl RepoList {
@@ -38,7 +24,7 @@ impl RepoList {
 
         reader.lines().for_each(|x| match x {
             Ok(mut path) => {
-                let (valid, repo_path) = RepoPath::new(&mut path);
+                let (valid, repo_path) = Repo::new(&mut path);
                 if (valid) {
                     repo_list.repos.push(repo_path);
                 }

@@ -1,10 +1,10 @@
 use ::std::process::Command;
-use std::process::Output;
+use std::process::ExitStatus;
 
-use crate::repolist::RepoPath;
+use crate::repo::Repo;
 
-pub fn _pull(path: &RepoPath) {
-    let loc = &path.path;
+pub fn _pull(repo: &Repo) {
+    let loc = &repo.path;
     println!("{}", loc);
 
     let output = Command::new("git")
@@ -14,6 +14,11 @@ pub fn _pull(path: &RepoPath) {
         .output()
         .expect("Err");
 
-    println!("status: {}", output.status);
-    println!("{}", String::from_utf8_lossy(&output.stdout));
+    match output.status.success() {
+        true => println!("{} was succesfully updated", &repo.name),
+        false => {
+            println!("Couldn't update {}", &repo.name);
+            println!("Status Code {}", &output.status)
+        }
+    }
 }
