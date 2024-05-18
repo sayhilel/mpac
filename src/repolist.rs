@@ -1,3 +1,4 @@
+use crate::git::_pull;
 use crate::repo::Repo;
 
 use std::{
@@ -42,7 +43,17 @@ impl RepoList {
             println!("NO REPOS");
         }
         self.repos.iter().enumerate().for_each(|(index, repo)| {
-            println!("{}:", index);
+            println!("{}:{}", index, repo.name);
+        });
+    }
+
+    pub fn update_all(&self) {
+        if self.repos.is_empty() {
+            println!("NO REPOS");
+        }
+        self.repos.iter().enumerate().for_each(|(index, repo)| {
+            println!("updating {}", &repo.name);
+            _pull(&repo);
         });
     }
 }
