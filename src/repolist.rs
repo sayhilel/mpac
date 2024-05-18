@@ -50,6 +50,9 @@ impl RepoList {
     }
 
     pub fn list_repos(&self) {
+        if self.repos.is_empty() {
+            println!("NO REPOS");
+        }
         self.repos.iter().enumerate().for_each(|(index, repo)| {
             println!("{}: {}", index, repo.path);
         });
