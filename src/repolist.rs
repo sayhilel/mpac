@@ -26,15 +26,11 @@ impl RepoList {
 
         for lines in reader.lines() {
             if let Ok(path) = lines {
-                if path.trim().is_empty() {
-                    continue;
-                }
-                match Repo::new(&path) {
-                    Some(repo) => self.repos.push(repo),
-                    None => println!("Path is not valid: {}", path),
+                if let Some(repo) = Repo::new(path.trim()) {
+                    self.repos.push(repo);
                 }
             } else {
-                println!("Couldn't read line");
+                println!("Unable to read file")
             }
         }
 

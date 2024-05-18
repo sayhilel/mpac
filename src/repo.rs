@@ -12,17 +12,19 @@ pub struct Repo {
 }
 
 impl Repo {
-    //
-    pub fn new(path_: &String) -> Option<Repo> {
-        let path = PathBuf::from(path_.trim());
-        let name = path.file_name().unwrap().to_str().map(|s| s.to_string())?;
+    pub fn new(path_: &str) -> Option<Self> {
+        if path_.is_empty() {
+            return None;
+        }
 
-        // Validate the path
-        if path.exists() && !name.is_empty() {
+        let path = PathBuf::from(path_);
+
+        if path.exists() {
+            let name = path.file_name().unwrap().to_str().map(|s| s.to_string())?;
             Some(Repo { name, path })
         } else {
+            println!("Path '{}' Doesn't exist. Check the config file.", path_);
             None
         }
     }
-    //
 }
