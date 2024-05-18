@@ -1,9 +1,8 @@
 use crate::repo::Repo;
 
-use std::error::Error;
 use std::{
     fs::OpenOptions,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Error},
     path::Path,
 };
 
@@ -12,7 +11,11 @@ pub struct RepoList {
 }
 
 impl RepoList {
-    pub fn new(config_path: &Path) -> Result<RepoList, Box<dyn Error>> {
+    pub fn new() -> Self {
+        RepoList { repos: Vec::new() }
+    }
+
+    pub fn load(&mut self, config_path: &Path) -> Result<(), Error> {
         let repo_file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -20,19 +23,22 @@ impl RepoList {
             .open(config_path)?;
 
         let mut reader = BufReader::new(repo_file);
-        let mut repo_list = RepoList { repos: vec![] };
 
-        reader.lines().for_each(|x| match x {
-            Ok(mut path) => {
-                let (valid, repo_path) = Repo::new(&mut path);
-                if (valid) {
-                    repo_list.repos.push(repo_path);
+        for lines in reader.lines() {
+            if let Ok(path) = lines {
+                if path.trim().is_empty() {
+                    continue;
                 }
+                match Repo::new(&path) {
+                    Some(repo) => self.repos.push(repo),
+                    None => println!("Path is not valid: {}", path),
+                }
+            } else {
+                println!("Couldn't read line");
             }
-            Err(err) => panic!("{}", err),
-        });
+        }
 
-        Ok(repo_list)
+        Ok(())
     }
 
     pub fn list_repos(&self) {
@@ -40,11 +46,7 @@ impl RepoList {
             println!("NO REPOS");
         }
         self.repos.iter().enumerate().for_each(|(index, repo)| {
-            println!("{}: {}", index, repo.path);
+            println!("{}:", index);
         });
-    }
-
-    pub fn update_repos(&self) -> Result<(), Box<dyn Error>> {
-        Ok(())
     }
 }

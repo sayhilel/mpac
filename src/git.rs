@@ -4,8 +4,8 @@ use std::process::ExitStatus;
 use crate::repo::Repo;
 
 pub fn _pull(repo: &Repo) {
-    let loc = &repo.path;
-    println!("{}", loc);
+    // No hashmap / easy lookup for path
+    let loc = &repo.path.to_str().unwrap();
 
     let output = Command::new("git")
         .arg("-C")
