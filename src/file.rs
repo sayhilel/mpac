@@ -1,6 +1,7 @@
 use crate::repo::{Repo, RepoList};
 use anyhow::{self, Result};
 use clap::{Parser, Subcommand, ValueEnum};
+use dirs::config_dir;
 use std::io::prelude::*;
 
 use std::{
@@ -16,8 +17,10 @@ pub struct Config {
 // TODO add validation and custom config files
 impl Config {
     pub fn default() -> Self {
+        let config_ = config_dir().expect("Unable to locate config director");
+
         Self {
-            file: "/home/croxymoc/.config/mpac.conf".to_string(),
+            file: config_.to_str().expect("Unable to unwrap").to_string() + "mpac.conf",
         }
     }
 

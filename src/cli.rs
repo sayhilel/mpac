@@ -4,13 +4,16 @@ use clap::{Parser, Subcommand, ValueEnum};
 #[command(name = "mpac")]
 #[command(version, about, long_about = None)]
 pub struct Cli {
-    #[arg(value_enum)]
-    pub action: Action,
+    #[command(subcommand)]
+    pub action: Option<Action>,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+#[derive(Subcommand)]
 pub enum Action {
     List,
     Update,
-    Add,
+    Add {
+        #[arg(long)]
+        repo: String,
+    },
 }

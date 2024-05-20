@@ -21,13 +21,11 @@ fn main() -> Result<(), Error> {
     let mut repo_list = repo::RepoList::new();
     config.load(&mut repo_list)?;
 
-    match cli.action {
-        Action::List => repo_list.list(),
-        Action::Update => repo_list.update_all(),
-        Action::Add => config.add_to_file(
-            &mut repo_list,
-            &"/home/croxymoc/Documents/Projects/Portfolio/Sayhilel/".to_string(),
-        )?,
+    match &cli.action {
+        Some(Action::List) => repo_list.list(),
+        Some(Action::Update) => repo_list.update_all(),
+        Some(Action::Add { repo }) => config.add_to_file(&mut repo_list, &repo)?,
+        None => println!("No action specified, rerun with \"--help\" "),
     }
 
     Ok(())
