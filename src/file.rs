@@ -1,12 +1,12 @@
 use crate::repo::{Repo, RepoList};
-use anyhow::{self, Result};
+use anyhow::{anyhow, Result};
 use clap::{Parser, Subcommand, ValueEnum};
 use dirs::config_dir;
 use std::io::prelude::*;
 
 use std::{
     fs::{self, OpenOptions},
-    io::{BufRead, BufReader, BufWriter, Error},
+    io::{BufRead, BufReader, BufWriter},
     path::Path,
 };
 
@@ -16,6 +16,9 @@ pub struct Config {
 
 // TODO add validation and custom config files
 impl Config {
+    // Private
+
+    // Public
     pub fn default() -> Self {
         let config_ = config_dir().expect("Unable to locate config director");
 
@@ -24,7 +27,7 @@ impl Config {
         }
     }
 
-    pub fn load(&self, repo_list: &mut RepoList) -> Result<(), Error> {
+    pub fn load(&self, repo_list: &mut RepoList) -> Result<()> {
         let repo_file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -36,9 +39,7 @@ impl Config {
 
         for lines in reader.lines() {
             if let Ok(path) = lines {
-                if let Some(repo) = Repo::new(path.trim()) {
-                    repo_list.repos.push(repo);
-                }
+                repo_list.add_repo(&path.trim())?
             } else {
                 println!("Unable to read file")
             }
@@ -48,6 +49,12 @@ impl Config {
     }
 
     pub fn add_to_file(&self, repo_list: &mut RepoList, ipath: &String) -> Result<()> {
+        let check = &ipath.clone();
+
+        if repo_list.lookup.contains_key(check.trim()) {
+            return Err(anyhow!("Path already exists"));
+        }
+
         repo_list.add_repo(ipath)?;
         let mut file = OpenOptions::new()
             .append(true)

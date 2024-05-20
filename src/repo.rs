@@ -1,6 +1,6 @@
 use crate::git::_pull;
 use anyhow::{anyhow, Result};
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 pub struct Repo {
     pub name: String,
@@ -27,17 +27,23 @@ impl Repo {
 
 pub struct RepoList {
     pub repos: Vec<Repo>,
+    pub lookup: HashMap<String, String>,
 }
 
 impl RepoList {
     // Constructor
     pub fn new() -> Self {
-        RepoList { repos: Vec::new() }
+        RepoList {
+            repos: Vec::new(),
+            lookup: HashMap::new(),
+        }
     }
 
     // Bool result from adding a repo to a repolist
-    pub fn add_repo(&mut self, path: &String) -> Result<()> {
+    pub fn add_repo(&mut self, path: &str) -> Result<()> {
         if let Some(repo) = Repo::new(path) {
+            // TO-DO use lifetimes later
+            self.lookup.insert(path.to_string(), repo.name.clone());
             self.repos.push(repo);
             return Ok(());
         }
