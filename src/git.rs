@@ -1,9 +1,9 @@
+use crate::repo::Repo;
 use ::std::process::Command;
+use anyhow::{anyhow, Result};
 use std::process::ExitStatus;
 
-use crate::repo::Repo;
-
-pub fn _pull(repo: &Repo) {
+pub async fn _pull(repo: &Repo) -> Result<()> {
     // No hashmap / easy lookup for path
     let loc = &repo.path.to_str().unwrap();
 
@@ -15,10 +15,7 @@ pub fn _pull(repo: &Repo) {
         .expect("Err");
 
     match output.status.success() {
-        true => println!("{} was succesfully updated", &repo.name),
-        false => {
-            println!("Couldn't update {}", &repo.name);
-            println!("Status Code {}", &output.status)
-        }
+        true => Ok(()),
+        false => Err(anyhow!("Couldn't update repo")),
     }
 }

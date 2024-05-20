@@ -20,14 +20,17 @@ impl Config {
 
     // Public
     pub fn default() -> Self {
-        let config_ = config_dir().expect("Unable to locate config director");
-
-        Self {
-            file: config_.to_str().expect("Unable to unwrap").to_string() + "mpac.conf",
-        }
+        let mut config_ = config_dir()
+            .expect("Unable to locate config director")
+            .to_str()
+            .expect("Unable to resolve")
+            .to_string();
+        config_ += "/mpac.conf";
+        println!("{}", config_);
+        Self { file: config_ }
     }
 
-    pub fn load(&self, repo_list: &mut RepoList) -> Result<()> {
+    pub async fn load(&self, repo_list: &mut RepoList) -> Result<()> {
         let repo_file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -39,7 +42,7 @@ impl Config {
 
         for lines in reader.lines() {
             if let Ok(path) = lines {
-                repo_list.add_repo(&path.trim())?
+                repo_list.add_repo(&path.trim()).await?
             } else {
                 println!("Unable to read file")
             }
@@ -48,14 +51,14 @@ impl Config {
         Ok(())
     }
 
-    pub fn add_to_file(&self, repo_list: &mut RepoList, ipath: &String) -> Result<()> {
+    pub async fn add_to_file(&self, repo_list: &mut RepoList, ipath: &String) -> Result<()> {
         let check = &ipath.clone();
 
         if repo_list.lookup.contains_key(check.trim()) {
             return Err(anyhow!("Path already exists"));
         }
 
-        repo_list.add_repo(ipath)?;
+        repo_list.add_repo(ipath).await?;
         let mut file = OpenOptions::new()
             .append(true)
             .open(&self.file)

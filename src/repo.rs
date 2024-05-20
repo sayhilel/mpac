@@ -1,14 +1,20 @@
 use crate::git::_pull;
 use anyhow::{anyhow, Result};
+use futures::future::join_all;
+use futures::Future;
+use std::pin::Pin;
 use std::{collections::HashMap, path::PathBuf};
-
+use tokio::sync::Semaphore;
+use tokio::task;
+use tokio::task::JoinHandle;
+#[derive(Clone, Debug)]
 pub struct Repo {
     pub name: String,
     pub path: PathBuf,
 }
 
 impl Repo {
-    pub fn new(path_: &str) -> Option<Self> {
+    pub async fn new(path_: &str) -> Option<Self> {
         if path_.is_empty() {
             return None;
         }
@@ -40,8 +46,8 @@ impl RepoList {
     }
 
     // Bool result from adding a repo to a repolist
-    pub fn add_repo(&mut self, path: &str) -> Result<()> {
-        if let Some(repo) = Repo::new(path) {
+    pub async fn add_repo(&mut self, path: &str) -> Result<()> {
+        if let Some(repo) = Repo::new(path).await {
             // TO-DO use lifetimes later
             self.lookup.insert(path.to_string(), repo.name.clone());
             self.repos.push(repo);
@@ -63,13 +69,21 @@ impl RepoList {
     // Performs a git pull on all repos
     // TO-DO use async
     // switch to git2
-    pub fn update_all(&self) {
+    pub async fn update_all(&self) {
         if self.repos.is_empty() {
             println!("NO REPOS");
         }
-        self.repos.iter().enumerate().for_each(|(index, repo)| {
-            println!("updating {}", &repo.name);
-            _pull(&repo);
-        });
+        let mut tasks = vec![];
+        for repo in self.repos.iter().cloned() {
+            tasks.push(task::spawn(async move {
+                match _pull(&repo).await {
+                    Ok(()) => println!("Succesfully update {}", repo.name),
+                    Err(e) => println!("{}", e),
+                };
+            }));
+        }
+
+        // Await all tasks concurrently
+        join_all(tasks).await;
     }
 }
