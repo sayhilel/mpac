@@ -20,11 +20,9 @@ impl Repo {
         }
 
         let path = PathBuf::from(input_path);
+        let name = path.file_name().unwrap().to_str().map(|s| s.to_string())?;
         if path.exists() {
-            return Some(Repo {
-                name: path.display().to_string(),
-                path,
-            });
+            return Some(Repo { name, path });
         }
 
         None
