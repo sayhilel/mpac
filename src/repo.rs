@@ -11,30 +11,34 @@ pub struct Repo {
     pub path: PathBuf,
 }
 
+// TO-DO
+// Add check to make sure valid path is also a valid Repo
 impl Repo {
-    pub async fn new(path_: &str) -> Option<Self> {
-        if path_.is_empty() {
+    pub async fn new(input_path: &str) -> Option<Self> {
+        if input_path.is_empty() {
             return None;
         }
 
-        let path = PathBuf::from(path_);
-
+        let path = PathBuf::from(input_path);
         if path.exists() {
-            let name = path.file_name().unwrap().to_str().map(|s| s.to_string())?;
-            Some(Repo { name, path })
-        } else {
-            None
+            return Some(Repo {
+                name: path.display().to_string(),
+                path,
+            });
         }
+
+        None
     }
 }
 
+// TO-DO
+// The lookup map is improperly implemented
 pub struct RepoList {
     pub repos: Vec<Repo>,
     pub lookup: HashMap<String, String>,
 }
 
 impl RepoList {
-    // Constructor
     pub fn new() -> Self {
         RepoList {
             repos: Vec::new(),
@@ -42,7 +46,8 @@ impl RepoList {
         }
     }
 
-    // Bool result from adding a repo to a repolist
+    /* Acts like a check when appending paths to config_file, although this isn't the most efficent
+     * way since a repo is created and discarded */
     pub async fn add_repo(&mut self, path: &str) -> Result<()> {
         match Repo::new(path).await {
             Some(repo) => {
@@ -59,7 +64,8 @@ impl RepoList {
         }
     }
 
-    // List all repos in the repolist
+    // TO-DO
+    // Make The list prettier
     pub fn list(&self) {
         if self.repos.is_empty() {
             println!(
@@ -73,8 +79,7 @@ impl RepoList {
         });
     }
 
-    // Performs a git pull on all repos
-    // switch to git2
+    // Asynchronously updates every Repo
     pub async fn update_all(&self) {
         if self.repos.is_empty() {
             println!(
@@ -88,12 +93,11 @@ impl RepoList {
             tasks.push(task::spawn(async move {
                 match _pull(&repo).await {
                     Ok(()) => println!("{}: {}", "Updated".green(), repo.name.green()),
-                    Err(e) => println!("{}{}", "Failed to update due to ".red(), e),
+                    Err(e) => println!("{}{}{}", "Failed To Update ".red(), repo.name.red(), e),
                 };
             }));
         }
 
-        // Await all tasks concurrently
         join_all(tasks).await;
     }
 }

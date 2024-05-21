@@ -13,7 +13,8 @@ pub struct Config {
     pub file: String,
 }
 
-// TODO add validation and custom config files
+// TO-DO
+// Custom Config File & Validation For It
 impl Config {
     pub fn default() -> Self {
         let mut config_ = config_dir()
@@ -28,6 +29,7 @@ impl Config {
         Self { file: config_ }
     }
 
+    // Creates a Repo Struct for all values in config file
     pub async fn load(&self, repo_list: &mut RepoList) -> Result<()> {
         let repo_file = OpenOptions::new()
             .read(true)
@@ -55,6 +57,7 @@ impl Config {
         Ok(())
     }
 
+    // Adds Repo to config file
     pub async fn add_to_file(&self, repo_list: &mut RepoList, ipath: &String) -> Result<()> {
         let check = &ipath.clone();
 
@@ -72,6 +75,7 @@ impl Config {
         Ok(())
     }
 
+    // Removes a Repo from file given it's index in "mpac list"
     pub async fn remove_from_file(&self, repo_list: &mut RepoList, index: usize) -> Result<()> {
         if repo_list.repos.len() < index {
             return Err(anyhow!("{} {index} ", "Invalid index.".red()));

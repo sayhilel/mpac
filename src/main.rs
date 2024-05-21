@@ -10,6 +10,9 @@ use clap::Parser;
 use colored::Colorize;
 
 #[tokio::main]
+// TO-DO
+// Add more features such as individual updates
+// Maybe make this more of rust wrapper for working on multiple repos?
 async fn main() -> Result<(), Error> {
     let cli = Cli::parse();
 
