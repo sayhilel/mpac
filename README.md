@@ -16,15 +16,22 @@
 - Conditional updates (only pull when updates are available)
 - More enhancements (see TODO comments)
 
-## Contribution
-- Open issues for feature requests or submit pull requests.
+## Dependancies
+- **cargo**
+
+## Install
+- `$ git clone https://github.com/sayhilel/mpac.git`
+- `$ cargo install --path mpac/`
 
 ## Usage
-- `mpac help`: Display the help menu
-- `mpac list`: List all managed repositories
-- `mpac update`: Update all managed repositories
-- `mpac add --repo <path>`: Add a repository to be managed
-- `mpac rm --index <num>`: Remove a repository from management
+- `$ mpac help`: Display the help menu
+- `$ mpac list`: List all managed repositories
+- `$ mpac update`: Update all managed repositories
+- `$ mpac add --repo <path>`: Add a repository to be managed
+- `$ mpac rm --index <num>`: Remove a repository from management
+
+## Contribution
+- Open issues for feature requests or submit pull requests.
 
 ## Motivation
 Updating manually cloned repositories can be tedious and time-consuming. mpac simplifies this process by automating the checking and updating of these repositories.
