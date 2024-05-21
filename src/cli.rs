@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(name = "mpac")]
@@ -13,7 +13,11 @@ pub enum Action {
     List,
     Update,
     Add {
-        #[arg(long)]
+        #[arg(short, long)]
         repo: String,
+    },
+    Rm {
+        #[arg(short, long)]
+        index: usize,
     },
 }

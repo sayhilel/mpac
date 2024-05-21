@@ -1,7 +1,7 @@
 use crate::repo::Repo;
 use ::std::process::Command;
 use anyhow::{anyhow, Result};
-use std::process::ExitStatus;
+use colored::Colorize;
 
 pub async fn _pull(repo: &Repo) -> Result<()> {
     // No hashmap / easy lookup for path
@@ -15,7 +15,10 @@ pub async fn _pull(repo: &Repo) -> Result<()> {
         .expect("Err");
 
     match output.status.success() {
-        true => Ok(()),
-        false => Err(anyhow!("Couldn't update repo")),
+        true => {
+            println!("{}", "Updating...".yellow());
+            return Ok(());
+        }
+        false => Err(anyhow!("git error code:{}", output.status)),
     }
 }
